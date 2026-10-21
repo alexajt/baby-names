@@ -1,0 +1,50 @@
+---
+title: "Female Baby Name Trends Since 2000"
+format: html
+execute:
+  echo: true
+  message: false
+  warning: false
+---
+
+We compare the popularity trajectories of nine female baby names (**Alexa**, **Anna**, **Arriah**, **Jada**, **Janiah**, **Leah**, **Maddie**, **Marissa**, and **Sania**) from 2000 to 2025 using Social Security Administration data. Because some names have thousands of births per year while others are rarer, each panel uses its own vertical scale to highlight when each name peaked.
+
+```{r}
+library(tidyverse)
+
+# Read the combined SSA baby names dataset
+baby_names <- read_csv("ssa-baby-names.csv", show_col_types = FALSE)
+
+# Target names to compare
+selected_names <- c(
+  "Alexa", "Leah", "Arriah", "Anna", "Marissa",
+  "Sania", "Jada", "Maddie", "Janiah"
+)
+
+# Filter to female births from 2000 onward for our nine names
+friends_names <- baby_names |>
+  filter(
+    sex == "F",
+    year >= 2000,
+    name %in% selected_names
+  )
+
+# Find each name's peak year since 2000 to highlight on the plot
+peak_years <- friends_names |>
+  slice_max(count, n = 1, with_ties = FALSE, by = name)
+
+# Plot a 3x3 grid of trends with shaded area and peak year dot
+ggplot(friends_names, aes(x = year, y = count, color = name, fill = name)) +
+  geom_area(alpha = 0.25, show.legend = FALSE) +
+  geom_line(linewidth = 1, show.legend = FALSE) +
+  geom_point(data = peak_years, size = 2.5, show.legend = FALSE) +
+  facet_wrap(~ name, scales = "free_y", ncol = 3) +
+  labs(
+    title = "Rise and Fall of Nine Female Names (2000–2025)",
+    subtitle = "Dots mark each name's peak year since 2000 (note separate y-axis scales)",
+    x = "Year",
+    y = "Babies Named per Year",
+    caption = "Source: U.S. Social Security Administration"
+  ) +
+  theme_minimal()
+```

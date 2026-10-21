@@ -1,0 +1,8 @@
+# Downloaded data
+ssa-baby-names.csv
+*.zip
+
+# Quarto rendered output and cache
+analysis.html
+analysis_files/
+/.quarto/
